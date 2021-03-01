@@ -1,6 +1,10 @@
 package com.example.SkyLand;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 
@@ -17,6 +21,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener{
     GameView dibujo;
+
     private SensorManager sensorManager;
     private Sensor acelerometerSensor;
     MediaPlayer mediaPlayer;
@@ -24,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         List<Sensor> listaSensores;
@@ -35,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         setContentView(dibujo);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
 
         if(mediaPlayer != null){
             mediaPlayer.release();
@@ -81,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     @Override
     protected void onResume() {
-
-        super.onResume();
         sensorManager.registerListener(this,acelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         System.out.println("ON RESUME");
         if(mediaPlayer != null){
@@ -91,11 +95,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mediaPlayer = MediaPlayer.create(this,R.raw.randommelodies);
         mediaPlayer.seekTo(0);
         mediaPlayer.start();
+        super.onResume();
     }
 
+    @Override
+    public void onBackPressed() {
+        System.exit(0);
+    }
     @Override public void onPointerCaptureChanged(boolean hasCapture) {}
 
     @Override public void onSensorChanged(SensorEvent event) {}
 
     @Override public void onAccuracyChanged(Sensor sensor, int accuracy) { }
+
 }

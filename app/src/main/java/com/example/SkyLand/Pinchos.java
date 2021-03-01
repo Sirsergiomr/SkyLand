@@ -11,7 +11,7 @@ public class Pinchos  {
     public  void Pincho(Canvas lienzo, float posX, float posY, float ejeX, float ejeY, int tamanio, int borde ,GameView view){
             pincelPinchos.setStyle(Paint.Style.FILL);
             pincelPinchos.setStrokeWidth(8);
-            pincelPinchos.setColor(Color.CYAN);
+            pincelPinchos.setColor(Color.BLACK);
 
             lienzo.drawLine(posX, posY, posX + 25, posY - 25, pincelPinchos);//A - B
             lienzo.drawLine(posX + 25, posY - 25, posX + 50, posY, pincelPinchos);//B-C
@@ -23,6 +23,9 @@ public class Pinchos  {
                 view.setSumador(0);
                 view.setAnimacion(true);
                 System.out.println("Colision pincho");
+
+                int vidas = view.getVidas();
+                view.setVidas(vidas-1);
             }
     }
 

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SkyLand</string>
+    <string name="prefs_file">com.example.SkyLand.FILE</string>
 </resources>
