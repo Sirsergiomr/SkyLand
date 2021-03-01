@@ -2,9 +2,12 @@ package com.example.SkyLand;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,28 +25,29 @@ import android.view.WindowManager;
 public class GameView extends SurfaceView implements SensorEventListener {
     private final GameLoopThread gameLoopThread;
     Paint pincel = new Paint();
-
     Paint pincelBorde = new Paint();
     Paint pincelBorde2 = new Paint();
     Paint pincelFondo = new Paint();
     Paint pincelTexto = new Paint();
-    float alto, ancho;
+    static  float alto, ancho;
     static boolean animacion = false;
     static boolean  touch = false;
     int tamanio= 50;
     int borde = 12;
-    private float ejeX, ejeY=658,ejeZ=0;
+    private float ejeX, ejeY,ejeZ=0;
     static int lv=2;
     private final com.example.SkyLand.Pinchos Pinchos = new Pinchos();
     private final ObstaculoCubo Cubo = new ObstaculoCubo();
     private float sumador = 0;
-
+    static float j= -1;
+    static float k= -1;
     public GameView(Context context, SensorManager sensorManager, Sensor acelerometerSensor) {
         super(context);
         sensorManager.registerListener(this, acelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
         Display pantalla = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         ancho = pantalla.getWidth();
         alto = pantalla.getHeight();
+        ejeY = alto-tamanio-borde;
 
         gameLoopThread = new GameLoopThread(this);
         SurfaceHolder holder = getHolder();
@@ -84,10 +88,12 @@ public class GameView extends SurfaceView implements SensorEventListener {
             ejeX = ancho-(tamanio+borde);
         }
         if(ejeX == ancho-tamanio-borde && ejeY>= (alto / 2)+(alto/4) && ejeY <= alto){
-            if(lv==0||lv==1){
+            if(lv==0||lv==1||lv==2){
                 ejeX = 62;
                 System.out.println("Pasas de nivel");
                 lv++;
+                j=-1;
+                k=-1;
             }
 
         }
@@ -105,9 +111,9 @@ public class GameView extends SurfaceView implements SensorEventListener {
             animacion = false;
 
         }
-        if(touch == true && ejeY >550-sumador ){
+        if(touch == true && ejeY >Math.floor((alto/2)+(alto/4))-tamanio-borde-sumador ){
             ejeY = ejeY-4;
-            if(ejeY == 550-sumador){
+            if(ejeY == Math.floor((alto/2)+(alto/4))-tamanio-borde-sumador){
                 animacion = true;
             }
         }
@@ -163,43 +169,47 @@ public class GameView extends SurfaceView implements SensorEventListener {
             Player(lienzo);
             lienzo.drawLine(ancho,alto,ancho,(alto / 2)+(alto/4),pincelBorde2);
             lienzo.drawLine(ancho,alto,ancho,(alto / 2)+(alto/4),pincelBorde2);
-            lienzo.drawText("NIVEL "+lv, ancho / 2, 40, pincelTexto);
+            if(lv!=3){
+                lienzo.drawText("NIVEL "+lv, ancho / 2, 40, pincelTexto);
+            }
 
             switch (lv){
                 case 0:
                     lienzo.drawLine(ancho,alto,ancho,(alto / 2)+(alto/4),pincelBorde2);
                     MoverPincho(296,lienzo);
                     MoverPincho(658,lienzo);
-                    Pinchos.Pincho(lienzo,1000,alto,ejeX,ejeY,tamanio,borde,this);
+                    Pinchos.Pincho(lienzo,ancho-(ancho/4),alto,ejeX,ejeY,tamanio,borde,this);
                     Pinchos.Pincho(lienzo,ancho/2,alto-100,ejeX,ejeY,tamanio,borde,this);
                     break;
                 case 1:
 
                     MoverPincho(296,lienzo);
                     MoverPincho(658,lienzo);
-                    MoverPincho2(lienzo,ancho/2,alto,200);
+                    MoverPincho2(lienzo,(float) Math.floor((ancho/2)),alto,200);
+                    Pinchos.Pincho(lienzo,ancho-(ancho/4), (alto/2)+(alto/4),ejeX,ejeY,tamanio,borde,this);
+                    Pinchos.Pincho(lienzo,ancho-(ancho/6), (alto/2)+(alto/3),ejeX,ejeY,tamanio,borde,this);
 
-                    Pinchos.Pincho(lienzo,1135, 555,ejeX,ejeY,tamanio,borde,this);
                     break;
                 case 2:
 
-                    Pinchos.Pincho(lienzo,758, 555,ejeX,ejeY,tamanio,borde,this);
-                    Cubo.Cubo(lienzo,758,658,ejeX,ejeY,tamanio,borde,this);
-                    Pinchos.Pincho(lienzo,758, alto-20,ejeX,ejeY,tamanio,borde,this);
-                    Pinchos.Pincho(lienzo,700, alto-20,ejeX,ejeY,tamanio,borde,this);
+                    Pinchos.Pincho(lienzo,ancho-(ancho/2)-tamanio-borde, (alto/2)+(alto/4),ejeX,ejeY,tamanio,borde,this);// ^
 
-                    Pinchos.Pincho(lienzo,458, 555,ejeX,ejeY,tamanio,borde,this);
-                    Cubo.Cubo(lienzo,458,658,ejeX,ejeY,tamanio,borde,this);
-                    Pinchos.Pincho(lienzo,458, alto-20,ejeX,ejeY,tamanio,borde,this);
-                    Pinchos.Pincho(lienzo,400, alto-20,ejeX,ejeY,tamanio,borde,this);
+                    Cubo.Cubo(lienzo,ancho-(ancho/2)-tamanio-borde,alto-tamanio-borde,ejeX,ejeY,tamanio,borde,this);      // []
+                    Pinchos.Pincho(lienzo,ancho-(ancho/2)-tamanio-borde, alto-20,ejeX,ejeY,tamanio,borde,this);          // ^^
+                    Pinchos.Pincho(lienzo,(ancho/3)-(ancho)-tamanio, alto-20,ejeX,ejeY,tamanio,borde,this);
 
+                    Pinchos.Pincho(lienzo,(ancho/3)-tamanio-borde, (alto/2)+(alto/4),ejeX,ejeY,tamanio,borde,this);
+
+                    Cubo.Cubo(lienzo,(ancho/3)-tamanio-borde,alto-tamanio-borde,ejeX,ejeY,tamanio,borde,this);
+                    Pinchos.Pincho(lienzo,(float) Math.floor((ancho/2)-(alto/7)-(tamanio/2)), alto-20,ejeX,ejeY,tamanio,borde,this);
+                    Pinchos.Pincho(lienzo,(ancho/4)+tamanio-tamanio, alto-20,ejeX,ejeY,tamanio,borde,this);
+
+                    MoverPincho2(lienzo,(float) Math.floor(ancho-(ancho/6)),alto,(float) Math.floor((ancho/2)+(ancho/5)));
                     MoverPincho(ancho/2+200,lienzo);
-                    MoverPincho2(lienzo,1095,alto,900);
-
-                    MoverPincho2(lienzo,1095,alto-100,900);
                     break;
-                default: lv = 1;
-                break;
+                case 3:
+                    lienzo.drawText("YOU WIN!!", ancho / 2, 40, pincelTexto);
+                    break;
             }
 
         }
@@ -212,20 +222,20 @@ public class GameView extends SurfaceView implements SensorEventListener {
         lienzo.drawRect(ejeX, ejeY,ejeX + 50, ejeY + 50, pincel);
     }
 
+
     static float i = 600;
     public void MoverPincho(float posX,Canvas lienzo){
-            if(i >= 500){
-                Pinchos.Pincho(lienzo,posX,i,ejeX,ejeY,tamanio,borde,this);
-                i--;
-            }
-            if(i== 500){
-                i= alto;
-                Pinchos.Pincho(lienzo,posX,i,ejeX,ejeY,tamanio,borde,this);
-            }
+        if(i >= 500){
+            Pinchos.Pincho(lienzo,posX,i,ejeX,ejeY,tamanio,borde,this);
+            i--;
+        }
+        if(i== 500){
+            i= alto;
+            Pinchos.Pincho(lienzo,posX,i,ejeX,ejeY,tamanio,borde,this);
+        }
     }
 
-    static float j= -1;
-    static float k= -1;
+
     public void MoverPincho2(Canvas lienzo,float startX ,float startY,float endX){
         if(j==-1 ){
             j = (float) Math.floor(startX);
