@@ -12,6 +12,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -47,6 +48,7 @@ public class GameView extends SurfaceView implements SensorEventListener {
     private float sumador = 0;
     static float j= -1;
     static float k= -1;
+    MediaPlayer mediaPlayer;
     public GameView(Context context, SensorManager sensorManager, Sensor acelerometerSensor) {
         super(context);
         sensorManager.registerListener(this, acelerometerSensor, SensorManager.SENSOR_DELAY_GAME);
@@ -54,14 +56,14 @@ public class GameView extends SurfaceView implements SensorEventListener {
         ancho = pantalla.getWidth();
         alto = pantalla.getHeight();
         ejeY = alto-tamanio-borde;
-
+        mediaPlayer = MediaPlayer.create(context,R.raw.bandasonora);
+        mediaPlayer.setLooping(true);
         gameLoopThread = new GameLoopThread(this);
         timer = new Timer(this);
         SurfaceHolder holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-
             }
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -69,6 +71,7 @@ public class GameView extends SurfaceView implements SensorEventListener {
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
                 timer.start();
+
             }
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format,

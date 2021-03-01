@@ -42,15 +42,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         setContentView(dibujo);
 
-
-        if(mediaPlayer != null){
-            mediaPlayer.release();
-        }
             // Crea el media player
-            mediaPlayer = MediaPlayer.create(this,R.raw.randommelodies);
+            mediaPlayer = MediaPlayer.create(this,R.raw.bandasonora);
             mediaPlayer.setLooping(true);
-            mediaPlayer.seekTo(0);
-            mediaPlayer.start();
     }
 
 
@@ -83,19 +77,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onPause();
         sensorManager.unregisterListener(this);
         System.out.println("ON PAUSE");
-        mediaPlayer.stop();
+        mediaPlayer.pause();
     }
     @Override
     protected void onResume() {
+        super.onResume();
         sensorManager.registerListener(this,acelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
         System.out.println("ON RESUME");
-        if(mediaPlayer != null){
+        mediaPlayer.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
             mediaPlayer.release();
         }
-        mediaPlayer = MediaPlayer.create(this,R.raw.randommelodies);
-        mediaPlayer.seekTo(0);
-        mediaPlayer.start();
-        super.onResume();
     }
 
     @Override
